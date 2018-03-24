@@ -1,0 +1,5 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: Katalog pośredni (x64\Debug\) zawiera pliki udostępnione z innego projektu (Project3.vcxproj). Może to spowodować niepoprawne zachowanie podczas oczyszczania i ponownej kompilacji.
+  test.cpp
+c:\users\nela\source\repos\linefollower - backup\project3\test.cpp(208): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
+c:\users\nela\source\repos\linefollower - backup\project3\test.cpp(210): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
+  Project3.vcxproj -> C:\Users\Nela\source\repos\linefollower - backup\x64\Debug\linefollower.exe

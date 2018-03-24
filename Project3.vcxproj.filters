@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Pliki źródłowe">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Pliki zasobów">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Źródło.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="programy.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Źródło1.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_highgui341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_core341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_videostab341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_videoio341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_video341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_ts341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_superres341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_stitching341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_shape341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_photo341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_objdetect341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_ml341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_imgproc341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_imgcodecs341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_flann341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_features2d341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_dnn341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\open32VS\lib\Release\opencv_calib3d341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\build\x64\vc15\lib\opencv_world341.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+    <Library Include="..\..\..\..\Downloads\ocv\opencv\build\x64\vc15\lib\opencv_world341d.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\git\linefollower\linefollower.sln" />
+  </ItemGroup>
+</Project>
