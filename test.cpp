@@ -28,7 +28,7 @@ bool cam = false;
 
 //mask
 int left_x = 60;
-int right_x = 630;// 530;
+int right_x = 630;
 int mask_y = 200;
 int mask_width = 195;
 int mask_y_1 = 300;
@@ -274,8 +274,7 @@ int main()
 	{
 		if (cam == true) {
 			capture >> frame;
-			split(img, frame_split); //frame
-			img = frame_split[0];
+			frame.copyTo(img);
 		}
 		
 
