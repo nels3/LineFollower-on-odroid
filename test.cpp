@@ -24,7 +24,7 @@ using namespace cv;
 
 int mode = 1;
 float y_cmd = 100;
-bool cam = false;
+bool cam = true;
 
 //mask
 int maskx1 = 40;
@@ -276,6 +276,7 @@ int main()
 			linefollower.findmiddle(img);
 		}
 		else {
+
 			linefollower.drawlines(img_gray);
 			linefollower.findmiddle(img_gray);
 		}
@@ -294,7 +295,8 @@ int main()
 			imshow("first", img);
 		}
 		else{
-			imshow("first", mask);
+
+			imshow("first", img_gray);
 		}
 		//imshow("img", detected);
 		waitKey(200);
