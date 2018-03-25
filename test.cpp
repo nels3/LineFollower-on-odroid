@@ -24,17 +24,17 @@ using namespace cv;
 
 int mode = 1;
 float y_cmd = 100;
-bool cam = true;
+bool cam = false;
 
 //mask
-int left_x = 60;
-int right_x = 630;
-int mask_y = 200;
-int mask_width = 195;
-int mask_y_1 = 300;
-int mask_y_2 = 340;
-int mask_x_l = 0;
-int mask_x_r = 639;
+int maskx1 = 40;
+int masky1 = 340;
+int maskx2 = 150;
+int masky2 = 170;
+int maskx3 = 540;
+int masky3 = masky2;
+int maskx4 = CAM_RES_X;
+int masky4 = 340;
 
 
 class linefollower_values {
@@ -54,96 +54,70 @@ public:
 	void blur(Mat &input, Mat &output) {
 		GaussianBlur(input, output, Size(5, 5), 0, 0);
 	}
-	
-	void edge(Mat &input, Mat &output, int threshold_value, int morph_size, int morph_elem) {
-		Mat kernel_v, kernel_h , out_v, out_h, thresh, output_thresh;
 
-		Point anchor;
-		anchor = Point(-1, -1);
+	void edge(Mat &input, Mat &output, int thresh) {
+		Mat kernel, thresh_out;
+		kernel = Mat(1, 3, CV_32F);
+		kernel.at<float>(0, 0) = -1;
+		kernel.at<float>(0, 1) = 0;
+		kernel.at<float>(0, 2) = 1;
 
-		kernel_v = Mat(1, 3, CV_32F);
-		kernel_v.at<float>(0, 0) = -1;
-		kernel_v.at<float>(0, 1) = 0;
-		kernel_v.at<float>(0, 2) = 1;
+		threshold(input, thresh_out, thresh, 255, THRESH_BINARY);
 
-		kernel_h = Mat(3, 1, CV_32F);
-		kernel_h.at<float>(0, 0) = 1;
-		kernel_h.at<float>(1, 0) = 0;
-		kernel_h.at<float>(2, 0) = -1;
+		Mat element = getStructuringElement(0, Size(15, 15), Point(7, 7));
+		morphologyEx(thresh_out, thresh_out, 3, element);
 
-		threshold(input, thresh, threshold_value, 255, cv::THRESH_BINARY);
-
-		int operation = 3;
-		Mat element = getStructuringElement(morph_elem, cv::Size(2 * morph_size + 1, 2 * morph_size + 1), cv::Point(morph_size, morph_size));
-		morphologyEx(thresh, output_thresh, operation, element);
-
-		filter2D(output_thresh, out_v, -1, kernel_v, anchor, 0, cv::BORDER_DEFAULT);
-		filter2D(output_thresh, out_h, -1, kernel_h, anchor, 0, cv::BORDER_DEFAULT);
-
-		Mat output_edges = out_v;
-
-		out_v.copyTo(output);
-
+		filter2D(thresh_out, output, -1, kernel, Point(-1, -1), 0, BORDER_DEFAULT);
 	}
 
 	void mask(Mat &input, Mat &output) {
+		masky3 = masky2;
 		Point mask_points[6] =
 		{
-			Point(mask_x_l, mask_y_2),
-			Point(mask_x_l, mask_y_1),
-			Point(left_x, mask_y),
-			Point(right_x, mask_y),
-			Point(mask_x_r, mask_y_1),
-			Point(mask_x_r, mask_y_2)
+			Point(maskx1, masky1),
+			Point(maskx2, masky2),
+			Point(maskx3, masky3),
+			Point(maskx4, masky4)
 		};
 		Mat mask = Mat::zeros(cv::Size(640, 360), CV_8UC1);
-		fillConvexPoly(mask, mask_points, 6, cv::Scalar(255, 0, 0));
-
+		fillConvexPoly(mask, mask_points, 4, cv::Scalar(255, 0, 0));
+		//imshow("img", mask);
 		bitwise_and(input, mask, output);
 	}
 
 	void detectline(Mat &input, Mat &output) {
 		if (mode = 2) {
-
-			HoughLinesP(input, lf.detected_prob, 1, CV_PI / 180, 50, 50, 10); 
+			HoughLinesP(input, lf.detected_prob, 1, CV_PI / 180, 50, 50, 10);
 			for (size_t i = 0; i < lf.detected_prob.size(); i++)
 			{
 				Vec4i l = lf.detected_prob[i];
 				line(output, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 255), 3, LINE_AA);
 			}
 		}
-		
-		
 		if (mode = 1) {
 			HoughLines(input, lf.detected_lines, 1, CV_PI / 180, 50);
 		}
-
 	}
+
 	void findlines() {
 		float rho_left = 0, theta_left = 0;
 		float rho_right = 0, theta_right = 0;
 		bool right = false;
 		bool left = false;
-		if (mode = 1){
+		if (mode = 1) {
 			for (size_t i = 0; i < lf.detected_lines.size(); i++) {
-
-				//cout << "lp:" << i << "\t"<<"rho"<<lf.detected_lines[i][0] << "\t theta" << lf.detected_lines[i][1] << endl;
 				float rho = lf.detected_lines[i][0];
 				float theta = lf.detected_lines[i][1];
 				if (rho > 0 and abs(rho_left - rho) > 50) {
 					rho_left = rho;
 					theta_left = theta;
 					left = true;
-
 				}
-			
 				if (rho < 0 and abs(rho_right - rho)>50) {
 					rho_right = rho;
 					theta_right = theta;
 					right = true;
 				}
-				
-				
 			}
 			if (left == true and right == true) {
 				lf.counter_of_lines = 2;
@@ -166,7 +140,6 @@ public:
 		else if (mode = 2) {
 			cout << "wykrylem" << lf.detected_prob.size();
 		}
-
 	}
 
 	void drawlines(Mat &output) {
@@ -185,7 +158,6 @@ public:
 		pt2.x = cvRound(x0 - 1000 * (-b));
 		pt2.y = cvRound(y0 - 1000 * (a));
 		line(output, pt1, pt2, Scalar(0, 0, 255), 3, CV_AA);
-
 	}
 
 	void findmiddle(Mat &output) {
@@ -194,6 +166,7 @@ public:
 		float x_right;
 		float x_left;
 		float x_middle_prev;
+		int mask_y = int(masky3);
 		for (int y = mask_y; y < CAM_RES_Y; y = y + 20) {
 			if (y != mask_y) {
 				x_middle_prev = x_middle;
@@ -204,8 +177,8 @@ public:
 			if (y == mask_y + 3 * 20) {
 				lf.middle = x_middle;
 			}
-			
-			if (x_middle > 0 and x_middle < CAM_RES_X and y !=mask_y) {
+
+			if (x_middle > 0 and x_middle < CAM_RES_X and y != mask_y) {
 				pt1.x = x_middle_prev;
 				pt1.y = y - 10;
 				pt2.x = x_middle;
@@ -213,131 +186,119 @@ public:
 				line(output, pt1, pt2, Scalar(0, 0, 255), 3, CV_AA);
 			}
 		}
-		
 	}
 
 	void check_middle() {
 		lf.offset = lf.middle - CAM_RES_X / 2;
-		//cout << lf.offset << endl;
+		cout << lf.offset << endl;
 	}
-	
 };
 
-
 linefollower_data linefollower;
-
 
 int main()
 {
 	vector<Mat> frame_split(4);
 	Mat frame(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat img(CAM_RES_Y, CAM_RES_X, CV_8UC4);
+	Mat img2(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat img_gray(CAM_RES_Y, CAM_RES_X, CV_8UC1);
 	Mat mask(CAM_RES_Y, CAM_RES_X, CV_8UC4);
-	//Mat detected(CAM_RES_Y, CAM_RES_X, CV_8UC4);
+	Mat display(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat gray(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat edge(CAM_RES_Y, CAM_RES_X, CV_8UC4);
-	
 	
 	namedWindow("img", WINDOW_AUTOSIZE);
 	namedWindow("value", WINDOW_AUTOSIZE);
 	//namedWindow("first", WINDOW_AUTOSIZE);
 
-	int thresh_value = 130;
+	int thresh_value = 100;
 	int P_min_votes = 20;
 	int P_max_gap = 20;
 	int P_min_len = 20;
-
-
-	createTrackbar("Thresh", "value", &thresh_value, 400,NULL);
-	createTrackbar("Mask_x", "value", &right_x, 600, NULL);
-	createTrackbar("Mask_y", "value", &left_x, 400, NULL);
-	//createTrackbar("mask_y_1 ", "value", &mask_y_1, 600, NULL);
-	//createTrackbar("mask_y_2", "value", &mask_y_2, 400, NULL);
-	//createTrackbar("mask_x_r", "value", &mask_x_r, 400, NULL);
-
 	
-
+	createTrackbar("Thresh", "value", &thresh_value, 300, NULL);
+	createTrackbar("lewy_dolny", "value", &maskx1, 300, NULL);
+	createTrackbar("mask_x2", "value", &maskx2, 400, NULL);
+	createTrackbar("wysokosc", "value", &masky2, 340, NULL);
+	createTrackbar("mask_x3", "value", &maskx3, 640, NULL);
+	
 	VideoCapture capture;
 	capture.open(0, CAP_V4L2);
-	
-
 	if (cam == false) {
 		//dane z pliku
-		const string file_name = "lab21.jpg";
-
-		//obraz wczytywany w szarosci
-		img = imread(file_name, CV_LOAD_IMAGE_GRAYSCALE);
+		const string file_name = "lab51.jpg";
+		img = imread(file_name);
 		if (!img.data) {
 			cout << "Nie odnalezionu pliku " << file_name;
 			return -1;
+		}		
+		cvtColor(img, img2, CV_BGR2GRAY);
+	}
+	else {
+		if (!capture.isOpened()) {
+			cout << "error with camera" << endl;
+		}
+		else {
+			capture.set(CAP_PROP_FRAME_WIDTH, 640);
+			capture.set(CAP_PROP_FRAME_HEIGHT, 360);
+			capture.set(CAP_PROP_CONVERT_RGB, false);
+			cout << "MODE" << capture.get(CAP_PROP_MODE) << endl;
+			cout << "RGB" << capture.get(CAP_PROP_CONVERT_RGB) << endl;
 		}
 	}
-	else{
-		if (!capture.isOpened()){
-			cout <<"error with camera"<<endl;
-		}
-		else{
-			capture.set(CAP_PROP_FRAME_WIDTH,640);
-			capture.set(CAP_PROP_FRAME_HEIGHT,360);
-			//capture.set(CAP_PROP_MODE,CAP_MODE_YUYV);
-			capture.set(CAP_PROP_CONVERT_RGB,false);
-			//cout<<"MODE"<<CAP_MODE_YUYV<<endl;
-			cout<<"MODE"<<capture.get(CAP_PROP_MODE)<<endl;
-			cout<<"RGB"<<capture.get(CAP_PROP_CONVERT_RGB)<<endl;
-		}
-	}
-	
-	
 
-	
-	while (true)
-	{
-
-		if (cam==true){
+	while (true){
+		if (cam == true) {
 			capture >> frame;
 			cv::split(frame, frame_split);
 			img_gray = frame_split[0];
 		}
-
 		//rozmywamy
-		if (cam==false){
-			linefollower.blur(img, gray);
-		}
-		else{
-			linefollower.blur(img_gray,gray);
-		}
-		//szukamy krawedzi
-		linefollower.edge(gray, edge, thresh_value, 7, 0);
+		if (cam == false) 
+			linefollower.blur(img2, gray);
+		else 
+			linefollower.blur(img_gray, gray);
 
+		//szukamy krawedzi
+		linefollower.edge(gray, edge, thresh_value);
+				
 		//tworzymy maske
 		linefollower.mask(edge, mask);
 		Mat detected = Mat::zeros(CAM_RES_Y, CAM_RES_X, CV_8UC4);
+
 		linefollower.detectline(mask, detected);
-		
+
 		linefollower.findlines();
 
-		linefollower.drawlines(img_gray);
-		
-		if (cam ==false){
+		if (cam == false) {
+			linefollower.drawlines(img);
 			linefollower.findmiddle(img);
 		}
-		else{
+		else {
+			linefollower.drawlines(img_gray);
 			linefollower.findmiddle(img_gray);
 		}
-
 		linefollower.check_middle();
-	
 
-		//imshow("img", detected);
-		//if(cam==false){
-		//	imshow("first", img);
-		//}
-		//else{
-		imshow("first", img_gray);
-		//}
+		detected.convertTo(display,4);
+		
+		if (cam == false){
+			int a = (int)lf.offset;
+			stringstream ss;
+			ss << a;
+			string str = ss.str();
+			string tex = ("Offset = ");
+			tex.append(str);
+			putText(img, tex, Point(CAM_RES_X/2-50,CAM_RES_Y/4),1,1,Scalar(255,0,0));
+			imshow("first", img);
+		}
+		else{
+			imshow("first", mask);
+		}
 		//imshow("img", detected);
 		waitKey(200);
+		
 	}
 	capture.release();
 
