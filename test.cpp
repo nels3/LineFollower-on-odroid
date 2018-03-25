@@ -24,7 +24,7 @@ using namespace cv;
 
 int mode = 1;
 float y_cmd = 100;
-bool cam = false;
+bool cam = true;
 
 //mask
 int left_x = 60;
@@ -218,7 +218,7 @@ public:
 
 	void check_middle() {
 		lf.offset = lf.middle - CAM_RES_X / 2;
-		cout << lf.offset << endl;
+		//cout << lf.offset << endl;
 	}
 	
 };
@@ -229,20 +229,21 @@ linefollower_data linefollower;
 
 int main()
 {
+	vector<Mat> frame_split(4);
+	Mat frame(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat img(CAM_RES_Y, CAM_RES_X, CV_8UC4);
+	Mat img_gray(CAM_RES_Y, CAM_RES_X, CV_8UC1);
 	Mat mask(CAM_RES_Y, CAM_RES_X, CV_8UC4);
-	Mat detected(CAM_RES_Y, CAM_RES_X, CV_8UC4);
+	//Mat detected(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat gray(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 	Mat edge(CAM_RES_Y, CAM_RES_X, CV_8UC4);
-	Mat frame(CAM_RES_Y, CAM_RES_X, CV_8UC4);
-
-	vector<Mat> frame_split(4);
 	
-	//namedWindow("img", WINDOW_AUTOSIZE);
+	
+	namedWindow("img", WINDOW_AUTOSIZE);
 	namedWindow("value", WINDOW_AUTOSIZE);
-	namedWindow("first", WINDOW_AUTOSIZE);
+	//namedWindow("first", WINDOW_AUTOSIZE);
 
-	int thresh_value = 160;
+	int thresh_value = 130;
 	int P_min_votes = 20;
 	int P_max_gap = 20;
 	int P_min_len = 20;
@@ -256,7 +257,11 @@ int main()
 	//createTrackbar("mask_x_r", "value", &mask_x_r, 400, NULL);
 
 	
-	VideoCapture capture = VideoCapture(0);
+
+	VideoCapture capture;
+	capture.open(0, CAP_V4L2);
+	
+
 	if (cam == false) {
 		//dane z pliku
 		const string file_name = "lab21.jpg";
@@ -268,38 +273,70 @@ int main()
 			return -1;
 		}
 	}
+	else{
+		if (!capture.isOpened()){
+			cout <<"error with camera"<<endl;
+		}
+		else{
+			capture.set(CAP_PROP_FRAME_WIDTH,640);
+			capture.set(CAP_PROP_FRAME_HEIGHT,360);
+			//capture.set(CAP_PROP_MODE,CAP_MODE_YUYV);
+			capture.set(CAP_PROP_CONVERT_RGB,false);
+			//cout<<"MODE"<<CAP_MODE_YUYV<<endl;
+			cout<<"MODE"<<capture.get(CAP_PROP_MODE)<<endl;
+			cout<<"RGB"<<capture.get(CAP_PROP_CONVERT_RGB)<<endl;
+		}
+	}
+	
+	
 
 	
 	while (true)
 	{
-		if (cam == true) {
+
+		if (cam==true){
 			capture >> frame;
-			frame.copyTo(img);
+			cv::split(frame, frame_split);
+			img_gray = frame_split[0];
 		}
-		
 
 		//rozmywamy
-		linefollower.blur(img, gray);
-		
+		if (cam==false){
+			linefollower.blur(img, gray);
+		}
+		else{
+			linefollower.blur(img_gray,gray);
+		}
 		//szukamy krawedzi
 		linefollower.edge(gray, edge, thresh_value, 7, 0);
 
 		//tworzymy maske
 		linefollower.mask(edge, mask);
-
+		Mat detected = Mat::zeros(CAM_RES_Y, CAM_RES_X, CV_8UC4);
 		linefollower.detectline(mask, detected);
 		
 		linefollower.findlines();
 
-		linefollower.drawlines(detected);
-
-		linefollower.findmiddle(img);
+		linefollower.drawlines(img_gray);
+		
+		if (cam ==false){
+			linefollower.findmiddle(img);
+		}
+		else{
+			linefollower.findmiddle(img_gray);
+		}
 
 		linefollower.check_middle();
 	
 
 		//imshow("img", detected);
-		imshow("first", img);
+		//if(cam==false){
+		//	imshow("first", img);
+		//}
+		//else{
+		imshow("first", img_gray);
+		//}
+		//imshow("img", detected);
 		waitKey(200);
 	}
 	capture.release();
