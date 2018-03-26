@@ -212,7 +212,7 @@ int main()
 	namedWindow("value", WINDOW_AUTOSIZE);
 	//namedWindow("first", WINDOW_AUTOSIZE);
 
-	int thresh_value = 100;
+	int thresh_value = 148;
 	
 	createTrackbar("Thresh", "value", &thresh_value, 300, NULL);
 	createTrackbar("lewy_dolny", "value", &maskx1, 300, NULL);
