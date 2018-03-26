@@ -213,9 +213,6 @@ int main()
 	//namedWindow("first", WINDOW_AUTOSIZE);
 
 	int thresh_value = 100;
-	int P_min_votes = 20;
-	int P_max_gap = 20;
-	int P_min_len = 20;
 	
 	createTrackbar("Thresh", "value", &thresh_value, 300, NULL);
 	createTrackbar("lewy_dolny", "value", &maskx1, 300, NULL);
