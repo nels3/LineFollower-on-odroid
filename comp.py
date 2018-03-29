@@ -5,6 +5,8 @@ g++ test.cpp -std=c++11 -o output $(pkg-config --cflags --libs opencv)
 g++ cam.cpp -std=c++11 -o outcam $(pkg-config --cflags --libs opencv)
 ./outcam
 
+g++ control.cpp -std=c++11 -o out $(pkg-config --cflags --libs opencv)
+./out
 
 v4l2-ctl --set-ctrl=exposure_auto=1
 

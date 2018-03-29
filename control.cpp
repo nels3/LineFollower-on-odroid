@@ -24,7 +24,7 @@ using namespace cv;
 
 int mode = 1;
 float y_cmd = 100;
-bool cam = false;
+bool cam = true;
 
 //mask
 int maskx1 = 0;
@@ -269,7 +269,8 @@ int main()
 		linefollower.detectline(mask, detected);
 
 		linefollower.findlines();
-		cvtColor(img2, display, 9);
+		//cvtColor(img2, display, 9);
+		cvtColor(img_gray, display, 9);
 
 		if (cam == false) {
 			linefollower.drawlines(display);
